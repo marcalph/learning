@@ -1,0 +1,43 @@
+<html>
+    <body>
+        <h1 id="header0">Hello, World </h1>
+        <h1 id="header1">Hello, World </h1>
+        <input type="text" id="inp" onchange="logger()"/>
+        <button onclick="clicked()">Orange</button>
+        <p id="output"></p>
+        <script type="text/javascript">
+            function add(a,b, log=true) {
+                if (log===true) {
+                    console.log(log)
+                    console.log(a,b)
+                }
+                return a+b;
+            }
+            add(6,5)
+            function logger() {
+                var text = document.getElementById("inp").value;
+                var output = document.getElementById("output");
+                output.innerHTML = text
+            }
+            function clicked() {
+                var input_color = document.getElementById("inp").value;
+                document.getElementById("header0").style.color = input_color
+            }
+
+            document.querySelector("h1").innerHTML = "I'm the boss";
+            document.getElementById("inp").value = "this is an input";
+            // primitives
+            // string "" ''
+            // numbers 1.0
+            // boolean true false
+            // undefined
+            // null null
+            var x = 6;
+            var str = "hello";
+            console.warn(11=="11"); //compare "value"
+            console.log(11!=="11"); //compare value and type
+            console.log(true || false)
+        </script>
+    </body>
+
+</html>
