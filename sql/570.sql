@@ -15,16 +15,6 @@
 -- Write an SQL query to report the managers with at least five direct reports.
 
 
-"""
-SELECT name
-FROM (
-    SELECT distinct managerId, count(id) OVER (PARTITION BY managerId)
-    FROM Employee
-    WHERE managerId is not null) a
-JOIN
-    Employee b ON a.managerId=b.id
-
-"""
 
 
 """
