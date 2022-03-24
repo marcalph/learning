@@ -17,7 +17,7 @@
 
 
 
-"""
+
 SELECT
     Name
 FROM
@@ -29,4 +29,3 @@ FROM
     GROUP BY ManagerId
     HAVING count(ManagerId) >= 5) AS t2
     ON t1.Id = t2.ManagerId;
-"""

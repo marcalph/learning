@@ -11,7 +11,7 @@
 -- The median is the value separating the higher half from the lower half of a data sample.
 
 
-"""
+
 with a as (
     select num,
            sum(frequency) over (order by num) - frequency as lower_num,
@@ -23,4 +23,3 @@ with a as (
 SELECT avg(num) as median
 FROM a
 where medium_num between  lower_num and upper_num
-"""

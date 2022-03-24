@@ -18,7 +18,7 @@
 -- that number by the total number of players.
 
 
-"""
+
 SELECT sum(CASE WHEN temp.min_date + 1 = a.event_date THEN 1 ELSE 0 END)/count(distinct temp.player_id)
 FROM (
     SELECT plqyer_id, min(event_date) as min_date
@@ -27,4 +27,3 @@ FROM (
     JOIN
     activity ON temp.player_id = a.player_id
 )
-"""

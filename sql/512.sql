@@ -12,7 +12,7 @@
 
 -- Write an SQL query to report the device that is first logged in for each player.
 
-"""
+
 SELECT player_id, device_id
 FROM activity
 WHERE (player_id, event_date)
@@ -21,4 +21,3 @@ IN (
     FROM activity
     GROUP BY player_id
 )
-"""

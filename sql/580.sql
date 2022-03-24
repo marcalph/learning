@@ -28,10 +28,10 @@
 -- Write an SQL query to report the respective department name and number of students majoring in each department for all departments in the Department table (even ones with no current students).
 
 
-"""
+
 SELECT dept_name, count(student_id) as student_number
 FROM Department d
 LEFT JOIN Student s on s.dept_id=d.dept_id
 GROUP by d.dept_id
 ORDER by student_number desc, dept_name
-"""
+
