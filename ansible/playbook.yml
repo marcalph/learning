@@ -1,0 +1,10 @@
+---
+- name: myplaybook
+  hosts: all
+  tasks:
+    - name: mytask
+      command: "touch /tmp/ansible_was_here"
+    - name: update
+      homebrew:
+        update_homebrew: yes
+        upgrade_all: yes
