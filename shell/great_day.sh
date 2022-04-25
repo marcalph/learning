@@ -1,2 +1,8 @@
 #!/bin/bash
-echo "Today is ${1:-a great day}"
+if [[ -z $1 ]]
+then
+  res="a great day"
+else
+  res="$1"
+fi
+echo "Today is ${res}"
