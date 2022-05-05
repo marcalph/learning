@@ -98,3 +98,83 @@ class Counter extends React.Component {
       );
     }
   };
+
+
+
+
+
+
+
+
+  class Results extends React.Component {
+    constructor(props) {
+      super(props);
+    }
+    render() {
+      return <h1>{this.props.fiftyFifty? "You Lose!" : "You Win!"}</h1>;
+    }
+  }
+
+  class GameOfChance extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        counter: 1
+      };
+      this.handleClick = this.handleClick.bind(this);
+    }
+    handleClick() {
+      this.setState(prevState => {
+        return {
+          counter: prevState.counter+1
+        }
+      });
+    }
+    render() {
+      const expression = Math.random() >=.5?true:false;
+      return (
+        <div>
+          <button onClick={this.handleClick}>Play Again</button>
+          <Results fiftyFifty={expression} />
+          <p>{'Turn: ' + this.state.counter}</p>
+        </div>
+      );
+    }
+  }
+
+
+
+
+
+
+
+
+  class GateKeeper extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        input: ''
+      };
+      this.handleChange = this.handleChange.bind(this);
+    }
+    handleChange(event) {
+      this.setState({ input: event.target.value })
+    }
+    render() {
+      let inputStyle = {
+        border: '1px solid black'
+      };
+      if (this.state.input.length>15){inputStyle={border: "3px solid red"}
+      }
+      return (
+        <div>
+          <h3>Don't Type Too Much:</h3>
+          <input
+            type="text"
+            style={inputStyle}
+            value={this.state.input}
+            onChange={this.handleChange} />
+        </div>
+      );
+    }
+  };
