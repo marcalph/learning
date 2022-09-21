@@ -1,0 +1,31 @@
+---
+- name: myplaybook
+  hosts: all
+  tasks:
+    - name: mytask
+      command: "touch /tmp/ansible_was_here"
+
+    - name: get date
+      shell: date
+      register: datevar
+
+    - debug: var=datevar
+
+    - name: update homebrew on darwin machines
+      homebrew:
+        update_homebrew: yes
+        upgrade_all: yes
+      when: ansible_os_family=="Darwin"
+
+- name: different play
+  hosts: all
+
+  vars:
+    testvar: "i am a test variable"
+
+  tasks:
+    - block:
+      - name: debug in block
+        debug: msg={{testvar}}
+
+      - debug: msg={{ansible_facts}}
