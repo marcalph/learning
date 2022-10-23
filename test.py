@@ -1,4 +1,4 @@
-def f(i, values = []):
+def f(i: int, values:list = []):
     values.append(i)
     print(values)
     return values
