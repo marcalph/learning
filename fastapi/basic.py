@@ -13,6 +13,7 @@ async def root():
 async def get_item(item_id: int) -> dict[str, int]:
     return {"item_id": item_id}
 
+############################################################
 # if not placed before query would go to endpoint /user/"me"
 @myapp.get("/users/me")
 async def read_user_me():
@@ -21,13 +22,13 @@ async def read_user_me():
 @myapp.get("/users/{user_id}")
 async def read_user(user_id: str):
     return {"user_id": user_id}
-
-
+############################################################
 
 class ModelName(str, Enum):
     alexnet = "alexnet"
     resnet = "resnet"
     lenet = "lenet"
+
 
 def list_models():
     for name in ModelName:
@@ -54,4 +55,11 @@ async def print_output_path(file_path: str):
     return None
 
 
+fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
 
+# no defaut to query prm makes it needed
+@myapp.get("/items/")
+async def read_item(needed_query_prm: str | None, skip: int = 0, limit: int = 10):
+    if needed_query_prm:
+        return {"skipped": skip, "q": needed_query_prm}
+    return fake_items_db[skip : skip + limit]
