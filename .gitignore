@@ -5,3 +5,4 @@ outputs/
 #hydraconfig
 model/
 random.*
+rust/rustcode
