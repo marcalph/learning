@@ -1,5 +1,16 @@
+# done so far
+# path prm
+# query prm
+# request body (send data from client to API)
 from fastapi import FastAPI
 from enum import Enum
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    description: str|None = None
+    price: float
+    tax: float|None = None
 
 myapp = FastAPI()
 
@@ -7,6 +18,13 @@ myapp = FastAPI()
 async def root():
     return {"message": "Hello world"}
 
+@myapp.post("/items/{item_id}") # item_id path prm
+async def create_item(item_id: int, item: Item, q: str|None=None): # item req body, q query prm
+    result = {"item_id":item_id, **item.dict()}
+    if q:
+        result.update({"q": q})
+    print(f"creating item {item.name.upper()}")
+    return result
 
 # path parameters e.g. item_id
 @myapp.get("/items/{item_id}")
@@ -58,7 +76,7 @@ async def print_output_path(file_path: str):
 fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
 
 # no defaut to query prm makes it needed
-@myapp.get("/items/")
+@myapp.get("/items-list/")
 async def read_item(needed_query_prm: str | None, skip: int = 0, limit: int = 10):
     if needed_query_prm:
         return {"skipped": skip, "q": needed_query_prm}
