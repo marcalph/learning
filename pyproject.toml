@@ -8,6 +8,10 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 pycocotools = "^2.0.5"
+grpcio = "^1.50.0"
+grpcio-tools = "^1.50.0"
+hydra-core = "^1.2.0"
+pandas = "^1.5.1"
 
 
 [build-system]

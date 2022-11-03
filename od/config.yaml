@@ -59,7 +59,7 @@ callbacks:
 private:
   comet_api: fOmVZaafsPuJ6OP3myaJUd4fC
 data:
-  folder_path: /kaggle/input/global-wheat-detection
+  folder_path: ./datasets/wheat/
   num_workers: 0
   batch_size: 12
 augmentation:

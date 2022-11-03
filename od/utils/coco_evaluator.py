@@ -3,8 +3,10 @@ from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 import pycocotools.mask as mask_util
 import numpy as np
-
-
+from collections import defaultdict
+import torch
+import json
+from helpers import all_gather
 
 class CocoEvaluator(object):
     def __init__(self, coco_gt, iou_types):
