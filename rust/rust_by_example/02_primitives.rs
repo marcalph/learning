@@ -49,23 +49,22 @@ fn reverse(pair: (i32, bool)) -> (bool, i32) {
 //display and trasnpose tuple matrix
 use std::fmt::{self};
 #[derive(Debug)]
-struct Matrix ((f32, f32, f32, f32));
+struct Matrix(f32, f32, f32, f32);
 fn display_matrix() {
-    let mat: Matrix = Matrix((1.1, 1.2, 2.1, 2.2));
+    let mat: Matrix = Matrix(1.1, 1.2, 2.1, 2.2);
     println!("{:?}",mat);
     println!("Matrix:\n{}", mat);
     println!("Transpose:\n{}", transpose(mat));
 }
 impl fmt::Display for Matrix{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "( {} {} )", self.0.0, self.0.1)?;
-        write!(f, "( {} {} )", self.0.2, self.0.3)
+        writeln!(f, "( {} {} )", self.0, self.1)?;
+        write!(f, "( {} {} )", self.2, self.3)
 
     }
 }
 fn transpose(mat: Matrix) -> Matrix{
-    let (u, v, x, y) = mat.0;
-    Matrix((u, x, v, y))
+    Matrix(mat.0, mat.2, mat.1, mat.3)
 }
 // arrays and slices
 use std::mem;
