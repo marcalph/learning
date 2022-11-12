@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import logging
 from pprint import pformat
-from od.utils.data import wheat
+from utils.data import wheat
 
 @hydra.main(config_path = "./", config_name = "config.yaml", version_base= None)
 def main(config: DictConfig):
@@ -18,7 +18,7 @@ def main(config: DictConfig):
     train = wheat.load_csv_annotations(config)
     logging.info(pformat(train.head()))
 
-    
+ 
 
 
 if __name__ ==  "__main__":

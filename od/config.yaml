@@ -56,8 +56,6 @@ callbacks:
       save_top_k: 3
       filepath: saved_models/
       mode: ${training.mode}
-private:
-  comet_api: fOmVZaafsPuJ6OP3myaJUd4fC
 data:
   folder_path: ./datasets/wheat/
   num_workers: 0
