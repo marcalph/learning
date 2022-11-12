@@ -2,6 +2,7 @@
 # path prm
 # query prm
 # request body (send data from client to API)
+# query prm and string val
 from fastapi import FastAPI
 from enum import Enum
 from pydantic import BaseModel
@@ -52,7 +53,7 @@ def list_models():
     for name in ModelName:
         print(name)
 
-
+# path parameter
 @myapp.get("/models/{model_name}")
 async def get_model(model_name: ModelName):
     list_models()
@@ -73,11 +74,26 @@ async def print_output_path(file_path: str):
     return None
 
 
+
+
+@myapp.put("/items/{item_id}")
+async def create_item(item_id: int, item: Item, q: str | None = None):
+    result = {"item_id": item_id, **item.dict()}
+    if q:
+        result.update({"q": q})
+    return result
+
+
 fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
+from fastapi import Query
 
 # no defaut to query prm makes it needed
 @myapp.get("/items-list/")
-async def read_item(needed_query_prm: str | None, skip: int = 0, limit: int = 10):
-    if needed_query_prm:
+async def read_item(unneeded_query_prm: str | None = None, 
+                    skip: str = Query(default="1", max_length=50), 
+                    limit: int = 10
+):
+    skip=int(skip)
+    if unneeded_query_prm:
         return {"skipped": skip, "q": needed_query_prm}
     return fake_items_db[skip : skip + limit]
