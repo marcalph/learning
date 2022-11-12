@@ -2,11 +2,13 @@
 # path prm
 # query prm
 # request body (send data from client to API)
-# query prm and string val
+# query prm and string validation
+# path prm and num validatons
+
 from fastapi import FastAPI
 from enum import Enum
 from pydantic import BaseModel
-
+from fastapi import Query, Path
 class Item(BaseModel):
     name: str
     description: str|None = None
@@ -29,8 +31,16 @@ async def create_item(item_id: int, item: Item, q: str|None=None): # item req bo
 
 # path parameters e.g. item_id
 @myapp.get("/items/{item_id}")
-async def get_item(item_id: int) -> dict[str, int]:
-    return {"item_id": item_id}
+async def read_items(
+    *,
+    item_id: int = Path(title="The ID of the item to get", ge=0, le=1000),
+    q: str,
+    size: float = Query(gt=0, lt=10.5)
+):
+    results = {"item_id": item_id}
+    if q:
+        results.update({"q": q})
+    return results
 
 ############################################################
 # if not placed before query would go to endpoint /user/"me"
@@ -76,16 +86,9 @@ async def print_output_path(file_path: str):
 
 
 
-@myapp.put("/items/{item_id}")
-async def create_item(item_id: int, item: Item, q: str | None = None):
-    result = {"item_id": item_id, **item.dict()}
-    if q:
-        result.update({"q": q})
-    return result
-
 
 fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
-from fastapi import Query
+
 
 # no defaut to query prm makes it needed
 @myapp.get("/items-list/")
@@ -93,7 +96,7 @@ async def read_item(unneeded_query_prm: str | None = None,
                     skip: str = Query(default="1", max_length=50), 
                     limit: int = 10
 ):
-    skip=int(skip)
+    skip_=int(skip)
     if unneeded_query_prm:
-        return {"skipped": skip, "q": needed_query_prm}
-    return fake_items_db[skip : skip + limit]
+        return {"skipped": skip, "q": unneeded_query_prm}
+    return fake_items_db[skip_ : skip_ + limit]
