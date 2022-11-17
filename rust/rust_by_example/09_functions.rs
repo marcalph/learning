@@ -6,6 +6,12 @@ fn main() {
     closures();
     capturing_closures();
     movables();
+    input_prms();
+    type_anonymity();
+    input_functions();
+    output_parameters();
+    iterator_any();
+    iterator_find();
 }
 
 // Function that returns a boolean value
@@ -326,3 +332,147 @@ fn input_prms() {
 
     println!("3 doubled: {}", apply_to_3(double));
 }
+
+
+// `F` must implement `Fn` for a closure which takes no
+// inputs and returns nothing - exactly what is required
+// for `print`.
+fn apply_<F>(f: F) where
+    F: Fn() {
+    f();
+}
+
+fn type_anonymity() {
+    let x = 7;
+
+    // Capture `x` into an anonymous type and implement
+    // `Fn` for it. Store it in `print`.
+    let print = || println!("{}", x);
+
+    apply_(print);
+}
+
+
+// Define a function which takes a generic `F` argument
+// bounded by `Fn`, and calls it
+fn call_me<F: Fn()>(f: F) {
+    f();
+}
+
+// Define a wrapper function satisfying the `Fn` bound
+fn function() {
+    println!("I'm a function!");
+}
+
+fn input_functions() {
+    // Define a closure satisfying the `Fn` bound
+    let closure = || println!("I'm a closure!");
+
+    call_me(closure);
+    call_me(function);
+}
+
+
+fn create_fn() -> impl Fn() {
+    let text = "Fn".to_owned();
+    // move keyword must be used, which signals that all captures occur by value. 
+    // This is required because any captures by reference would be dropped as soon as the function exited
+    move || println!("This is a: {}", text)
+}
+
+fn create_fnmut() -> impl FnMut() {
+    let text = "FnMut".to_owned();
+
+    move || println!("This is a: {}", text)
+}
+
+fn create_fnonce() -> impl FnOnce() {
+    let text = "FnOnce".to_owned();
+
+    move || println!("This is a: {}", text)
+}
+
+fn output_parameters() {
+    let fn_plain = create_fn();
+    let mut fn_mut = create_fnmut();
+    let fn_once = create_fnonce();
+
+    fn_plain();
+    fn_mut();
+    fn_once();
+}
+
+pub trait Iterator {
+    // The type being iterated over.
+    type Item;
+
+    // `any` takes `&mut self` meaning the caller may be borrowed
+    // and modified, but not consumed.
+    fn any<F>(&mut self, f: F) -> bool where
+        // `FnMut` meaning any captured variable may at most be
+        // modified, not consumed. `Self::Item` states it takes
+        // arguments to the closure by value.
+        F: FnMut(Self::Item) -> bool;
+    
+    // `find` takes `&mut self` meaning the caller may be borrowed
+    // and modified, but not consumed.
+    fn find<P>(&mut self, predicate: P) -> Option<Self::Item> where
+    // `FnMut` meaning any captured variable may at most be
+    // modified, not consumed. `&Self::Item` states it takes
+    // arguments to the closure by reference.
+    P: FnMut(&Self::Item) -> bool;
+}
+
+fn iterator_any() {
+    let vec1 = vec![1, 2, 3];
+    let vec2 = vec![4, 5, 6];
+
+    // `iter()` for vecs yields `&i32`. Destructure to `i32`.
+    println!("2 in vec1: {}", vec1.iter().any(|&x| x == 2));
+    // `into_iter()` for vecs yields `i32`. No destructuring required.
+    println!("2 in vec2: {}", vec2.into_iter().any(| x| x == 2));
+
+    // `iter()` only borrows `vec1` and its elements, so they can be used again
+    println!("vec1 len: {}", vec1.len());
+    println!("First element of vec1 is: {}", vec1[0]);
+    // `into_iter()` does move `vec2` and its elements, so they cannot be used again
+    // println!("First element of vec2 is: {}", vec2[0]);
+    // println!("vec2 len: {}", vec2.len());
+    // TODO: uncomment two lines above and see compiler errors.
+
+    let array1 = [1, 2, 3];
+    let array2 = [4, 5, 6];
+
+    // `iter()` for arrays yields `&i32`.
+    println!("2 in array1: {}", array1.iter()     .any(|&x| x == 2));
+    // `into_iter()` for arrays yields `i32`.
+   // println!("2 in array2: {}", array2.into_iter().any(|x| x == 2));
+}
+
+
+fn iterator_find() {
+    let vec1 = vec![1, 2, 3];
+    let vec2 = vec![4, 5, 6];
+
+    // `iter()` for vecs yields `&i32`.
+    let mut iter = vec1.iter();
+    // `into_iter()` for vecs yields `i32`.
+    let mut into_iter = vec2.into_iter();
+
+    // `iter()` for vecs yields `&i32`, and we want to reference one of its
+    // items, so we have to destructure `&&i32` to `i32`
+    println!("Find 2 in vec1: {:?}", iter     .find(|&&x| x == 2));
+    // `into_iter()` for vecs yields `i32`, and we want to reference one of
+    // its items, so we have to destructure `&i32` to `i32`
+    println!("Find 2 in vec2: {:?}", into_iter.find(| &x| x == 2));
+
+    let array1 = [1, 2, 3];
+    let array2 = [4, 5, 6];
+
+    // `iter()` for arrays yields `&i32`
+    println!("Find 2 in array1: {:?}", array1.iter()     .find(|&&x| x == 2));
+    // `into_iter()` for arrays yields `i32`
+    //println!("Find 2 in array2: {:?}", array2.into_iter().find(|&x| x == 2));
+}
+
+
