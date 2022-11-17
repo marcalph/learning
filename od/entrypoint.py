@@ -11,12 +11,25 @@ import pandas as pd
 import logging
 from pprint import pformat
 from utils.data import wheat
+from utils.viz import plot_image_bboxes
 
+# store annotations in pandas
 @hydra.main(config_path = "./", config_name = "config.yaml", version_base= None)
 def main(config: DictConfig):
     logging.info(pformat(dict(config)))
     train = wheat.load_csv_annotations(config)
-    logging.info(pformat(train.head()))
+    logging.info("\n"+pformat(train.head()))
+    logging.info(f"There are {train['image_id'].nunique()} unique images in train data")
+    logging.info(f"There are {train.shape[0]} bboxes in train data")
+    plt.hist(train['area'], bins=50)
+    plt.title('Area value distribution')
+    plt.show()
+    plot_image_bboxes(train)
+
+
+
+
+
 
  
 

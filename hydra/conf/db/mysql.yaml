@@ -1,0 +1,5 @@
+driver: mysql 
+user: marcalph
+pass: dolphinsecret
+timeout: 10
+engine: innodb

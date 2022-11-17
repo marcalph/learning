@@ -1,0 +1,10 @@
+defaults:
+  - _self_
+  - db: mysql
+  - db/mysql/engine: innodbb
+
+node:                         # Config is hierarchical
+  loompa: 10                  # Simple value
+  zippity: ${node.loompa}     # Value interpolation
+  do: "oompa ${node.loompa}"  # String interpolation
+  waldo: ???                  # Missing value, must be populated prior to acces
