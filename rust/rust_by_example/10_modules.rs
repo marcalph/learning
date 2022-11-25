@@ -1,5 +1,10 @@
+// Bind the `deeply::nested::function` path to `other_function`.
+use deeply::nested::other_function as other_other_function;
+
 fn main() {
     visibility();
+    struct_visibility();
+    use_declaration();
 }
 
 mod my_mod {
@@ -121,3 +126,85 @@ fn visibility() {
     //my_mod::private_nested::restricted_function();
     // TODO ^ Try uncommenting this line
 }
+
+
+
+mod my {
+    // A public struct with a public field of generic type `T`
+    pub struct OpenBox<T> {
+        pub contents: T,
+    }
+
+    // A public struct with a private field of generic type `T`
+    #[allow(dead_code)]
+    pub struct ClosedBox<T> {
+        contents: T,
+    }
+
+    impl<T> ClosedBox<T> {
+        // A public constructor method
+        pub fn new(contents: T) -> ClosedBox<T> {
+            ClosedBox {
+                contents: contents,
+            }
+        }
+    }
+}
+
+fn struct_visibility() {
+    // Public structs with public fields can be constructed as usual
+    let open_box = my::OpenBox { contents: "public information" };
+
+    // and their fields can be normally accessed.
+    println!("The open box contains: {}", open_box.contents);
+
+    // Public structs with private fields cannot be constructed using field names.
+    // Error! `ClosedBox` has private fields
+    //let closed_box = my::ClosedBox { contents: "classified information" };
+    // TODO ^ Try uncommenting this line
+
+    // However, structs with private fields can be created using
+    // public constructors
+    let _closed_box = my::ClosedBox::new("classified information");
+
+    // and the private fields of a public struct cannot be accessed.
+    // Error! The `contents` field is private
+    //println!("The closed box contains: {}", _closed_box.contents);
+    // TODO ^ Try uncommenting this line
+}
+
+
+fn other_function() {
+    println!("called `function()`");
+}
+
+mod deeply {
+    pub mod nested {
+        pub fn other_function() {
+            println!("called `deeply::nested::function()`");
+        }
+    }
+}
+
+fn use_declaration() {
+    // Easier access to `deeply::nested::function`
+    other_function();
+
+    println!("Entering block");
+    {
+        // This is equivalent to `use deeply::nested::function as function`.
+        // This `function()` will shadow the outer one.
+        use crate::deeply::nested::other_function;
+
+        // `use` bindings have a local scope. In this case, the
+        // shadowing of `function()` is only in this block.
+        function();
+
+        println!("Leaving block");
+    }
+
+    function();
+}
+
+
+
