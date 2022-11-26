@@ -2,23 +2,21 @@ fn main() {
     // Statements here are executed when the compiled binary is called
 
     // Print text to the console
-    println!("Hello World!");
-    act();
-    let num = Complex{
+    hello_world_func();
+    let num = Complex{ // struct
         real: 3.3,
         imag: 7.2
     };
-    display_complex(num);
-    display_list();
-    display_color();
+    display_complex(num);  // impl display trait for complex struct
+    display_list();  // impl display for seq type
+    display_color();  // impl display and hex repr
 }
 
 // print something
-fn act() {
-    println!("I'm a Rustacean!")
+fn hello_world_func() {
+    println!("Hello, world! I'm a Rustacean now")
 }
 
-// impl trait Display for struct
 use std::fmt::{self, Display};
 #[derive(Debug)]
 struct Complex {
@@ -33,8 +31,8 @@ impl Display for Complex {
     }
 }
 fn display_complex(num: Complex) {
-    println!("{}",num);
-    println!("{:?}",num); 
+    println!("normal display::{}",num);
+    println!("debug display::{:?}",num); 
 }
 // display for seq type
 // Define a structure named `List` containing a `Vec`.
@@ -62,7 +60,6 @@ fn display_list() {
     println!("{}",v);
 }
 
-// display for color
 struct Color {
     red: u8,
     green: u8,
@@ -84,8 +81,6 @@ fn display_color(){
         Color { red: 0, green: 3, blue: 254 },
         Color { red: 0, green: 0, blue: 0 },
     ].iter() {
-        // Switch this to use {} once you've added an implementation
-        // for fmt::Display.
         println!("{}", *color);
     }
 }

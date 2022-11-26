@@ -2,29 +2,22 @@ fn main() {
     let _a_float: f64 = 1.0;  // Regular annotation
     let _an_integer   = 5i32; // Suffix annotation
     
-        // Integer subtraction
+    // Integer subtraction
     println!("1 - 2 = {}", 1i32 - 2);
     // TODO ^ Try changing `1i32` to `1u32` to see why the type is important
-
-    // Short-circuiting boolean logic
-    println!("true AND false is {}", true && false);
+    println!("true AND false is {}", true && false);            // boolean logic
     println!("true OR false is {}", true || false);
     println!("NOT true is {}", !true);
-
-    // Bitwise operations
-    println!("0011 AND 0101 is {:04b}", 0b0011u32 & 0b0101);
+    println!("0011 AND 0101 is {:04b}", 0b0011u32 & 0b0101);    // bitwise ops
     println!("0011 OR 0101 is {:04b}", 0b0011u32 | 0b0101);
     println!("0011 XOR 0101 is {:04b}", 0b0011u32 ^ 0b0101);
     println!("1 << 5 is {}", 1u32 << 5);
-    println!("0x80 >> 2 is 0x{:x}", 0x80u32 >>2);
+    println!("0x80 >> 2 is 0x{:x}", 0x80u32 >>2);               // unsure
 
-    // Use underscores to improve readability!
     println!("One million is written as {}", 1_000_000u32);
-    let a = reverse((1, true));
+    let a = reverse((1, true));                                 // reverse tuple
     println!("{a:?}");
-
     let tuple_of_tuples = ((1u8, 2u16, 2u32), (4u64, -1i8), -2i16);
-
     // Tuples are printable
     println!("tuple of tuples: {:?}", tuple_of_tuples);
     // But long Tuples (more than 12 elements) cannot be printed
@@ -37,9 +30,14 @@ fn main() {
     let (a, b, c, d) = tuple;
     println!("{:?}, {:?}, {:?}, {:?}", a, b, c, d);
 
-    display_matrix();
-    array_n_slice()
+    display_matrix();   // print debug for matrix (tuple struct),
+                        // print display
+                        // print display for transpose matrix as tuple reord
+    array_n_slice()     // xs is [1,2,3,4,5]
+                        // ys is [0..0] 500 elts
 }
+
+
 
 fn reverse(pair: (i32, bool)) -> (bool, i32) {
     // `let` can be used to bind the members of a tuple to variables
@@ -48,11 +46,11 @@ fn reverse(pair: (i32, bool)) -> (bool, i32) {
 }
 //display and trasnpose tuple matrix
 use std::fmt::{self};
-#[derive(Debug)]
+// #[derive(Debug)]
 struct Matrix(f32, f32, f32, f32);
 fn display_matrix() {
     let mat: Matrix = Matrix(1.1, 1.2, 2.1, 2.2);
-    println!("{:?}",mat);
+    // println!("{:?}",mat);
     println!("Matrix:\n{}", mat);
     println!("Transpose:\n{}", transpose(mat));
 }
@@ -120,6 +118,7 @@ fn array_n_slice() {
     //println!("{}", xs[5]);
 }
 fn analyze_slice(slice: &[i32]) {
+    println!("borrowing the array w/ & inside func analyze_slice");
     println!("\\_> first element of the slice: {}", slice[0]);
     println!("\\_> the slice has {} elements", slice.len());
 }
