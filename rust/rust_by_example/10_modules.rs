@@ -1,10 +1,11 @@
 // Bind the `deeply::nested::function` path to `other_function`.
-use deeply::nested::other_function as other_other_function;
 
 fn main() {
     visibility();
     struct_visibility();
     use_declaration();
+    println!("====== super and self");
+    super_and_self();
 }
 
 mod my_mod {
@@ -129,7 +130,7 @@ fn visibility() {
 
 
 
-mod my {
+mod my_other_mod {
     // A public struct with a public field of generic type `T`
     pub struct OpenBox<T> {
         pub contents: T,
@@ -153,7 +154,7 @@ mod my {
 
 fn struct_visibility() {
     // Public structs with public fields can be constructed as usual
-    let open_box = my::OpenBox { contents: "public information" };
+    let open_box = my_other_mod::OpenBox { contents: "public information" };
 
     // and their fields can be normally accessed.
     println!("The open box contains: {}", open_box.contents);
@@ -165,7 +166,7 @@ fn struct_visibility() {
 
     // However, structs with private fields can be created using
     // public constructors
-    let _closed_box = my::ClosedBox::new("classified information");
+    let _closed_box = my_other_mod::ClosedBox::new("classified information");
 
     // and the private fields of a public struct cannot be accessed.
     // Error! The `contents` field is private
@@ -174,13 +175,13 @@ fn struct_visibility() {
 }
 
 
-fn other_function() {
+fn different_function() {
     println!("called `function()`");
 }
 
 mod deeply {
     pub mod nested {
-        pub fn other_function() {
+        pub fn function() {
             println!("called `deeply::nested::function()`");
         }
     }
@@ -188,13 +189,13 @@ mod deeply {
 
 fn use_declaration() {
     // Easier access to `deeply::nested::function`
-    other_function();
+    function();
 
     println!("Entering block");
     {
         // This is equivalent to `use deeply::nested::function as function`.
         // This `function()` will shadow the outer one.
-        use crate::deeply::nested::other_function;
+        use crate::deeply::nested::function;
 
         // `use` bindings have a local scope. In this case, the
         // shadowing of `function()` is only in this block.
@@ -207,4 +208,54 @@ fn use_declaration() {
 }
 
 
+
+
+
+
+
+mod cool {
+    pub fn function() {
+        println!("called `cool::function()`");
+    }
+}
+
+mod my {
+    fn function() {
+        println!("called `my::function()`");
+    }
+    
+    mod cool {
+        pub fn function() {
+            println!("called `my::cool::function()`");
+        }
+    }
+    pub fn indirect_call() {
+        // Let's access all the functions named `function` from this scope!
+        print!("called `my::indirect_call()`, that\n> ");
+        
+        // The `self` keyword refers to the current module scope - in this case `my`.
+        // Calling `self::function()` and calling `function()` directly both give
+        // the same result, because they refer to the same function.
+        self::function();
+        function();
+        
+        // We can also use `self` to access another module inside `my`:
+        self::cool::function();
+        
+        // The `super` keyword refers to the parent scope (outside the `my` module).
+        super::function();
+        
+        // This will bind to the `cool::function` in the *crate* scope.
+        // In this case the crate scope is the outermost scope.
+        {
+            use crate::cool::function as root_function;
+            root_function();
+        }
+    }
+}
+
+
+fn super_and_self() {
+    my::indirect_call();
+}
 
