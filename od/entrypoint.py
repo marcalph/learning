@@ -5,18 +5,19 @@ import numpy as np
 from torch.utils.data import DataLoader
 import torchvision
 import torch
-import torch.utils as utils
 import matplotlib.pyplot as plt
 import pandas as pd
 import logging
 from pprint import pformat
 from utils.data import wheat
 from utils.viz import plot_image_bboxes
+import utils.config
 
 # store annotations in pandas
 @hydra.main(config_path = "./", config_name = "config.yaml", version_base= None)
 def main(config: DictConfig):
-    logging.info(pformat(dict(config)))
+    if config.get("print_config"):
+        utils.config.print_config(config, resolve=True)
     train = wheat.load_csv_annotations(config)
     logging.info("\n"+pformat(train.head()))
     logging.info(f"There are {train['image_id'].nunique()} unique images in train data")

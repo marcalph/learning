@@ -2,9 +2,10 @@ import pytorch_lightning as pl
 import rich.syntax
 import rich.tree
 from omegaconf import DictConfig, OmegaConf
+from typing import Sequence
+import rich 
 
-
-@rank_zero_only
+# @rank_zero_only
 def print_config(
     config: DictConfig,
     fields: Sequence[str] = (

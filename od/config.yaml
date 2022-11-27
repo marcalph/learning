@@ -85,3 +85,4 @@ augmentation:
       format: pascal_voc
       label_fields:
       - labels
+print_config: true
