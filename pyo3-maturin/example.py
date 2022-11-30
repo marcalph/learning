@@ -31,9 +31,11 @@ class Human(BaseModel):
 jan = Human(name="Jan", age=6)
 print(jan.json())
 rust.human_says_hi(jan.json())
+print(timeit.timeit("get_fib_py(10)", setup="from __main__ import get_fib_py"))
+print(timeit.timeit("get_fib_rs(10)", setup="from pyo3_maturin import get_fib_rs"))
+
 
 if __name__ == '__main__':
-    print(timeit.timeit("get_fib_py(100)", setup="from __main__ import get_fib_py"))
-    print(timeit.timeit("get_fib_rs(100)", setup="from pyo3_maturin import get_fib_rs"))
-
+    rust.greater_than_2(4)
+    rust.greater_than_2(-1)
 

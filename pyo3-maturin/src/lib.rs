@@ -6,7 +6,6 @@ fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
     Ok((a + b).to_string())
 }
 
-
 #[pyfunction]
 fn multiply(a: isize, b:isize) -> isize {
     a * b
@@ -112,6 +111,54 @@ struct Human {
 
 
 
+
+// =================== //
+//     Exceptions      //
+// =================== //
+use std::fmt;
+
+// 1 Define error
+#[derive(Debug)]
+struct MyError {
+    pub msg: &'static str,
+}
+
+// 2 implement error trait
+impl std::error::Error for MyError {}
+
+// 3 impl display trait
+impl fmt::Display for MyError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Error from Rust: {}", self.msg)
+    }
+}
+use pyo3::{Python, PyErr};
+use pyo3::exceptions::PyOSError;
+
+// 4 impl convert trait
+impl std::convert::From<MyError> for PyErr {
+    fn from(err: MyError) -> PyErr {
+        PyOSError::new_err(err.to_string())
+    }
+}
+
+#[pyfunction]
+// 5 simple fuction to generate said error
+fn greater_than_2(number: isize) -> Result<isize, MyError> {
+    if number <= 2 {
+        return Err(MyError {
+            msg: "number is less than or equal to 2",
+        });
+    } else {
+        return Ok(number);
+    }
+}
+
+
+
+
+
+
 /// A Python module implemented in Rust.
 #[pymodule]
 fn pyo3_maturin(_py: Python, m: &PyModule) -> PyResult<()> {
@@ -120,6 +167,7 @@ fn pyo3_maturin(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(multiply, m)?)?;
     m.add_function(wrap_pyfunction!(get_fib_rs, m)?)?;
     m.add_function(wrap_pyfunction!(human_says_hi, m)?)?;
+    m.add_function(wrap_pyfunction!(greater_than_2, m)?)?;    
     m.add_class::<RustStruct>()?;
     Ok(())
 }
