@@ -4,6 +4,10 @@
 # request body (send data from client to API)
 # query prm and string validation
 # path prm and num validatons
+# request body parameters (to be passed to the request put/post)
+# body fields to enforce validation/metadata inside of pydantic models
+# body fields : the field class from pydantic can enforce validation on request body attr
+
 
 from fastapi import FastAPI
 from enum import Enum
