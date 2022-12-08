@@ -26,9 +26,6 @@ ERRORS = {
     ID_ERROR: "to-do id error",
 }
 
+
 class TodosReturnCode(Enum):
     pass
-
-    
-
-

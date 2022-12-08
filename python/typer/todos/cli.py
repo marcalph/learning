@@ -5,10 +5,10 @@ from typing import Optional, List
 
 import typer
 
-from todos import (
-    ERRORS, __app_name__, __version__, config, database, todo
-)
+from todos import ERRORS, __app_name__, __version__, config, database, todo
+
 app = typer.Typer()
+
 
 @app.command()
 def init(
@@ -36,6 +36,7 @@ def init(
         raise typer.Exit(1)
     else:
         typer.secho(f"The to-do database is {db_path}", fg=typer.colors.GREEN)
+
 
 def get_todoer() -> todo.Todoer:
     if config.CONFIG_FILE_PATH.exists():
@@ -65,9 +66,7 @@ def add(
     todoer = get_todoer()
     todo, error = todoer.add(description, priority)
     if error:
-        typer.secho(
-            f'Adding to-do failed with "{ERRORS[error]}"', fg=typer.colors.RED
-        )
+        typer.secho(f'Adding to-do failed with "{ERRORS[error]}"', fg=typer.colors.RED)
         raise typer.Exit(1)
     else:
         typer.secho(
@@ -76,16 +75,14 @@ def add(
             fg=typer.colors.GREEN,
         )
 
-@app.command(name="list")
 
+@app.command(name="list")
 def list_all() -> None:
     """List all to-dos."""
     todoer = get_todoer()
     todo_list = todoer.get_todo_list()
     if len(todo_list) == 0:
-        typer.secho(
-            "There are no tasks in the to-do list yet", fg=typer.colors.RED
-        )
+        typer.secho("There are no tasks in the to-do list yet", fg=typer.colors.RED)
         raise typer.Exit()
     typer.secho("\nto-do list:\n", fg=typer.colors.BLUE, bold=True)
     columns = (
@@ -108,6 +105,7 @@ def list_all() -> None:
         )
     typer.secho("-" * len(headers) + "\n", fg=typer.colors.BLUE)
 
+
 @app.command(name="complete")
 def set_done(todo_id: int = typer.Argument(...)) -> None:
     """Complete a to-do by setting it as done using its TODO_ID."""
@@ -126,7 +124,6 @@ def set_done(todo_id: int = typer.Argument(...)) -> None:
         )
 
 
-
 @app.command()
 def remove(
     todo_id: int = typer.Argument(...),
@@ -139,6 +136,7 @@ def remove(
 ) -> None:
     """Remove a to-do using its TODO_ID."""
     todoer = get_todoer()
+
     def _remove():
         todo, error = todoer.remove(todo_id)
         if error:
@@ -152,6 +150,7 @@ def remove(
                 f"""to-do # {todo_id}: '{todo["Description"]}' was removed""",
                 fg=typer.colors.GREEN,
             )
+
     if force:
         _remove()
     else:
@@ -161,13 +160,12 @@ def remove(
         except IndexError:
             typer.secho("Invalid TODO_ID", fg=typer.colors.RED)
             raise typer.Exit(1)
-        delete = typer.confirm(
-            f"Delete to-do # {todo_id}: {todo['Description']}?"
-        )
+        delete = typer.confirm(f"Delete to-do # {todo_id}: {todo['Description']}?")
         if delete:
             _remove()
         else:
             typer.echo("Operation canceled")
+
 
 @app.command(name="clear")
 def remove_all(
@@ -197,6 +195,7 @@ def _version_callback(value: bool) -> None:
     if value:
         typer.echo(f"{__app_name__} v{__version__}")
         raise typer.Exit()  # exit the app cleanly
+
 
 @app.callback()
 def main(
