@@ -4,15 +4,17 @@
 # request body (send data from client to API)
 # query prm and string validation
 # path prm and num validatons
-# request body parameters (to be passed to the request put/post)
+# request body parameters w/ pydantic basemodel (to be passed to the request put/post)
 # body fields to enforce validation/metadata inside of pydantic models
 # body fields : the field class from pydantic can enforce validation on request body attr
-
+# examples
+# extra data type: uuid, datetime/date, frozenset
+# cookie parameter, header
 
 from fastapi import FastAPI
 from enum import Enum
 from pydantic import BaseModel
-from fastapi import Query, Path
+from fastapi import Query, Path, Body
 class Item(BaseModel):
     name: str
     description: str|None = None
@@ -43,7 +45,7 @@ async def read_items(
 ):
     results = {"item_id": item_id}
     if q:
-        results.update({"q": q})
+        results.update({"q": q})  # type: ignore
     return results
 
 ############################################################
@@ -56,6 +58,46 @@ async def read_user_me():
 async def read_user(user_id: str):
     return {"user_id": user_id}
 ############################################################
+
+
+
+
+@myapp.put("/items/{item_id}")
+async def update_item(
+    *,
+    item_id: int,
+    item: Item = Body(
+        examples={
+            "normal": {
+                "summary": "A normal example",
+                "description": "A **normal** item works correctly.",
+                "value": {
+                    "name": "Foo",
+                    "description": "A very nice Item",
+                    "price": 35.4,
+                    "tax": 3.2,
+                },
+            },
+            "converted": {
+                "summary": "An example with converted data",
+                "description": "FastAPI can convert price `strings` to actual `numbers` automatically",
+                "value": {
+                    "name": "Bar",
+                    "price": "35.4",
+                },
+            },
+            "invalid": {
+                "summary": "Invalid data is rejected with an error",
+                "value": {
+                    "name": "Baz",
+                    "price": "thirty five point four",
+                },
+            },
+        },
+    ),
+):
+    results = {"item_id": item_id, "item": item}
+    return results
 
 class ModelName(str, Enum):
     alexnet = "alexnet"
