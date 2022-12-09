@@ -7,22 +7,20 @@ from omegaconf import DictConfig
 # https://github.com/quantumblacklabs/kedro/blob/9809bd7ca0556531fa4a2fc02d5b2dc26cf8fa97/kedro/utils.py
 def load_obj(obj_path: str, default_obj_path: str = "") -> Any:
     """Extract an object from a given path.
-        Args:
-            obj_path: Path to an object to be extracted, including the object name.
-            default_obj_path: Default object path.
-        Returns:
-            Extracted object.
-        Raises:
-            AttributeError: When the object does not have the given named attribute.
+    Args:
+        obj_path: Path to an object to be extracted, including the object name.
+        default_obj_path: Default object path.
+    Returns:
+        Extracted object.
+    Raises:
+        AttributeError: When the object does not have the given named attribute.
     """
     obj_path_list = obj_path.rsplit(".", 1)
     obj_path = obj_path_list.pop(0) if len(obj_path_list) > 1 else default_obj_path
     obj_name = obj_path_list[0]
     module_obj = importlib.import_module(obj_path)
     if not hasattr(module_obj, obj_name):
-        raise AttributeError(
-            f"Object `{obj_name}` cannot be loaded from `{obj_path}`."
-        )
+        raise AttributeError(f"Object `{obj_name}` cannot be loaded from `{obj_path}`.")
     return getattr(module_obj, obj_name)
 
 
@@ -36,9 +34,14 @@ def set_seed(seed: int = 666):
 
 
 def save_useful_info():
-    shutil.copytree(os.path.join(hydra.utils.get_original_cwd(), 'src'),
-                    os.path.join(os.getcwd(), 'code/src'))
-    shutil.copy2(os.path.join(hydra.utils.get_original_cwd(), 'hydra_run.py'), os.path.join(os.getcwd(), 'code'))
+    shutil.copytree(
+        os.path.join(hydra.utils.get_original_cwd(), "src"),
+        os.path.join(os.getcwd(), "code/src"),
+    )
+    shutil.copy2(
+        os.path.join(hydra.utils.get_original_cwd(), "hydra_run.py"),
+        os.path.join(os.getcwd(), "code"),
+    )
 
 
 def collate_fn(batch):
@@ -68,7 +71,7 @@ def product_dict(**kwargs) -> List[List]:
     vals = kwargs.values()
     for instance in product(*vals):
         zip_list = list(zip(keys, instance))
-        yield [f'{i}={j}' for i, j in zip_list]
+        yield [f"{i}={j}" for i, j in zip_list]
 
 
 def config_to_hydra_dict(cfg: DictConfig) -> Dict:
@@ -86,7 +89,7 @@ def config_to_hydra_dict(cfg: DictConfig) -> Dict:
     experiment_dict = {}
     for k, v in cfg.items():
         for k1, v1 in v.items():
-            experiment_dict[f'{k}.{k1}'] = v1
+            experiment_dict[f"{k}.{k1}"] = v1
 
     return experiment_dict
 
@@ -115,7 +118,6 @@ def flatten_omegaconf(d, sep="_"):
     return obj
 
 
-
 def get_training_datasets(cfg: DictConfig) -> dict:
     """
     Get datases for modelling
@@ -127,47 +129,51 @@ def get_training_datasets(cfg: DictConfig) -> dict:
 
     """
 
-    train = pd.read_csv(f'{cfg.data.folder_path}/train.csv')
+    train = pd.read_csv(f"{cfg.data.folder_path}/train.csv")
 
-    train[['x', 'y', 'w', 'h']] = pd.DataFrame(
-        np.stack(train['bbox'].apply(lambda x: ast.literal_eval(x)))).astype(np.float32)
+    train[["x", "y", "w", "h"]] = pd.DataFrame(
+        np.stack(train["bbox"].apply(lambda x: ast.literal_eval(x)))
+    ).astype(np.float32)
 
     # precalculate some values
-    train['x1'] = train['x'] + train['w']
-    train['y1'] = train['y'] + train['h']
-    train['area'] = train['w'] * train['h']
-    train_ids, valid_ids = train_test_split(train['image_id'].unique(), test_size=0.1, random_state=cfg.training.seed)
+    train["x1"] = train["x"] + train["w"]
+    train["y1"] = train["y"] + train["h"]
+    train["area"] = train["w"] * train["h"]
+    train_ids, valid_ids = train_test_split(
+        train["image_id"].unique(), test_size=0.1, random_state=cfg.training.seed
+    )
 
     # for fast training
     if cfg.training.debug:
         train_ids = train_ids[:10]
         valid_ids = valid_ids[:10]
 
-    train_df = train.loc[train['image_id'].isin(train_ids)]
-    valid_df = train.loc[train['image_id'].isin(valid_ids)]
+    train_df = train.loc[train["image_id"].isin(train_ids)]
+    valid_df = train.loc[train["image_id"].isin(valid_ids)]
 
-    train_img_dir = f'{cfg.data.folder_path}/train'
+    train_img_dir = f"{cfg.data.folder_path}/train"
 
     # initialize augmentations
-    train_augs_list = [load_obj(i['class_name'])(**i['params']) for i in cfg['augmentation']['train']['augs']]
-    train_bbox_params = OmegaConf.to_container((cfg['augmentation']['train']['bbox_params']))
+    train_augs_list = [
+        load_obj(i["class_name"])(**i["params"])
+        for i in cfg["augmentation"]["train"]["augs"]
+    ]
+    train_bbox_params = OmegaConf.to_container(
+        (cfg["augmentation"]["train"]["bbox_params"])
+    )
     train_augs = A.Compose(train_augs_list, bbox_params=train_bbox_params)
 
-    valid_augs_list = [load_obj(i['class_name'])(**i['params']) for i in cfg['augmentation']['valid']['augs']]
-    valid_bbox_params = OmegaConf.to_container((cfg['augmentation']['valid']['bbox_params']))
+    valid_augs_list = [
+        load_obj(i["class_name"])(**i["params"])
+        for i in cfg["augmentation"]["valid"]["augs"]
+    ]
+    valid_bbox_params = OmegaConf.to_container(
+        (cfg["augmentation"]["valid"]["bbox_params"])
+    )
     valid_augs = A.Compose(valid_augs_list, bbox_params=valid_bbox_params)
 
-    train_dataset = WheatDataset(train_df,
-                                  'train',
-                                  train_img_dir,
-                                  cfg,
-                                  train_augs)
+    train_dataset = WheatDataset(train_df, "train", train_img_dir, cfg, train_augs)
 
-    valid_dataset = WheatDataset(valid_df,
-                                  'valid',
-                                  train_img_dir,
-                                  cfg,
-                                  valid_augs)
+    valid_dataset = WheatDataset(valid_df, "valid", train_img_dir, cfg, valid_augs)
 
-    return {'train': train_dataset, 'valid': valid_dataset}
-
+    return {"train": train_dataset, "valid": valid_dataset}

@@ -6,6 +6,7 @@ from PIL import Image
 
 import torchvision.transforms as T
 
+
 def get_transforms(train):
     transforms = []
     transforms.append(T.PILToTensor())
@@ -81,5 +82,3 @@ class PennFudanDataset(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.imgs)
-
-

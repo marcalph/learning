@@ -3,7 +3,7 @@ import rich.syntax
 import rich.tree
 from omegaconf import DictConfig, OmegaConf
 from typing import Sequence
-import rich 
+import rich
 
 # @rank_zero_only
 def print_config(
