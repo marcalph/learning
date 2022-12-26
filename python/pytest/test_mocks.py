@@ -85,3 +85,17 @@ def test_missing_user(monkeypatch):
     # default is now missing the 'user' entry.
     with pytest.raises(KeyError):
         _ = create_connection_string()
+
+def load_data():
+    # This should be mocked as it is a dependency
+    return 1
+
+def dummy_function():
+    # This is the desired function we are testing
+    return load_data()
+
+
+# expecting failing test
+def test_mocking_function(monkeypatch):
+    monkeypatch.setattr("test_mocks.load_data", lambda : 1)
+    assert dummy_function() == 2, "Value should be mocked to return 2"
