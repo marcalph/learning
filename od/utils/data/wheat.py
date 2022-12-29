@@ -228,10 +228,10 @@ class LitWheat(pl.LightningModule):
 
 
 class LitWheat(pl.LightningModule):
-    def __init__(self, hparams: DictConfig = None, cfg: DictConfig = None, model=None):
+    def __init__(self, hparams: dict | None = None, cfg: DictConfig = None, model=None):
         super(LitWheat, self).__init__()
         self.cfg = cfg
-        self.hparams = hparams
+        self.hparams.update(hparams)
         self.model = model
 
     def forward(self, x, *args, **kwargs):
