@@ -8,3 +8,4 @@ random.*
 rust/rustcode
 target/
 .hypothesis/
+test_video.mp4
