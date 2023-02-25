@@ -7,7 +7,8 @@ addr = ("127.0.0.1", 9999)
 buf = 512
 width = 640
 height = 480
-cap = cv.VideoCapture(0)
+# cap = cv.VideoCapture(0) >> 0 is the camera device on mac
+cap = cv.VideoCapture("test_video.mp4") 
 cap.set(3, width)
 cap.set(4, height)
 code = 'start'
