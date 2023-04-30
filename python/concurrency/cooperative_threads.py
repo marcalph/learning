@@ -7,11 +7,16 @@ import datetime
 from typing import NoReturn
 
 class State(Enum):
+    """ Enum class for allowed states
+    """
     TRACK = 'track'
     EMPTY = 'empty'
 
 
 class PublisherState:
+    """ Convenience class to interact with said state instance
+        The lock is overly cautious, but adds call consistency/uniformity
+    """
     def __init__(self):
         initial_state = requests.get('http://localhost:8000/get_state').json()["state"]
         self._value = State(initial_state)
@@ -34,6 +39,7 @@ def publish_track(pub_state: PublisherState) -> NoReturn:
         else:
             time.sleep(0.1)
 
+
 def publish_empty(pub_state: PublisherState) -> NoReturn:
     while True:
         if pub_state.get() == State.EMPTY:
@@ -42,7 +48,8 @@ def publish_empty(pub_state: PublisherState) -> NoReturn:
         else:
             time.sleep(0.1)
 
-def get_state(pub_state: PublisherState):
+
+def get_state(pub_state: PublisherState) -> NoReturn:
     while True:
         response = requests.get('http://localhost:8000/get_state')
         if response.status_code == 200:
@@ -53,15 +60,16 @@ def get_state(pub_state: PublisherState):
         time.sleep(1)
 
 
-pub_state = PublisherState()
-t1 = threading.Thread(target=publish_track, args=(pub_state,))
-t2 = threading.Thread(target=publish_empty, args=(pub_state,))
-t3 = threading.Thread(target=get_state, args=(pub_state,))
+if __name__ == "__main__":
+    pub_state = PublisherState()
+    t1 = threading.Thread(target=publish_track, args=(pub_state,))
+    t2 = threading.Thread(target=publish_empty, args=(pub_state,))
+    t3 = threading.Thread(target=get_state, args=(pub_state,))
 
-t1.start()
-t2.start()
-t3.start()
+    t1.start()
+    t2.start()
+    t3.start()
 
-t1.join()
-t2.join()
-t3.join()
+    t1.join()
+    t2.join()
+    t3.join()
