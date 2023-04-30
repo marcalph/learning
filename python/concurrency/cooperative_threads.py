@@ -6,6 +6,14 @@ import datetime
 
 from typing import NoReturn
 
+### needed tests
+# Test that the track function runs only when shared_var is set to State.track, and does not run when shared_var is set to State.empty.
+# Test that the empty function runs only when shared_var is set to State.empty, and does not run when shared_var is set to State.track.
+# Test that the get_state function updates the value of shared_var correctly based on the HTTP response.
+# Test that the threads cooperate and alternate correctly based on the value of pub_state.
+# Test that the code runs without errors or exceptions, and all threads finish properly when the program terminates.
+
+
 class State(Enum):
     """ Enum class for allowed states
     """
