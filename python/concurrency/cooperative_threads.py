@@ -10,44 +10,53 @@ class State(Enum):
     TRACK = 'track'
     EMPTY = 'empty'
 
-initial_state = requests.get('http://localhost:8000/get_state')
-initial_state = initial_state.json()["state"]
-current_state = State(initial_state)
+
+class PublisherState:
+    def __init__(self):
+        initial_state = requests.get('http://localhost:8000/get_state').json()["state"]
+        self._value = State(initial_state)
+        self._lock = threading.Lock()
+    
+    def get(self):
+        with self._lock:
+            return self._value
+    
+    def set(self, value):
+        with self._lock:
+            self._value = State(value)
 
 
-def publish_track() -> NoReturn:
+def publish_track(pub_state: PublisherState) -> NoReturn:
     while True:
-        if current_state == State.TRACK:
+        if pub_state.get() == State.TRACK:
             print(f"{datetime.datetime.now().strftime('%H:%M:%S')} tracking task is ongoing")
             time.sleep(1)
         else:
             time.sleep(0.1)
 
-def publish_empty() -> NoReturn:
+def publish_empty(pub_state: PublisherState) -> NoReturn:
     while True:
-        if current_state == State.EMPTY:
+        if pub_state.get() == State.EMPTY:
             print(f"{datetime.datetime.now().strftime('%H:%M:%S')} no tracking - empty publish")
             time.sleep(1)
         else:
             time.sleep(0.1)
-''
-def get_state():
-    global current_state
+
+def get_state(pub_state: PublisherState):
     while True:
         response = requests.get('http://localhost:8000/get_state')
         if response.status_code == 200:
             state_str = response.json()['state']
-            if current_state.value != state_str:
+            if pub_state.get().value != state_str:
                 print("state changed")
-            if state_str == State.TRACK.value:
-                current_state = State.TRACK
-            else:
-                current_state = State.EMPTY
+            pub_state.set(state_str)
         time.sleep(1)
 
-t1 = threading.Thread(target=publish_track)
-t2 = threading.Thread(target=publish_empty)
-t3 = threading.Thread(target=get_state)
+
+pub_state = PublisherState()
+t1 = threading.Thread(target=publish_track, args=(pub_state,))
+t2 = threading.Thread(target=publish_empty, args=(pub_state,))
+t3 = threading.Thread(target=get_state, args=(pub_state,))
 
 t1.start()
 t2.start()
