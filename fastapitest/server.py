@@ -14,7 +14,6 @@ app = FastAPI()
 class State(Enum):
     TRACK = 'track'
     EMPTY = 'empty'
-    OTHER = 'other'
 
 current_state = State.EMPTY
 @app.get("/get_state")

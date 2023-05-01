@@ -21,7 +21,7 @@ class State(Enum):
     EMPTY = 'empty'
 
 
-class PublisherState:
+class PublishingState:
     """ Convenience class to interact with said state instance
         The lock is overly cautious, but adds call consistency/uniformity
     """
@@ -39,7 +39,7 @@ class PublisherState:
             self._value = State(value)
 
 
-def publish_track(pub_state: PublisherState) -> NoReturn:
+def publish_track(pub_state: PublishingState) -> NoReturn:
     while True:
         if pub_state.get() == State.TRACK:
             print(f"{datetime.datetime.now().strftime('%H:%M:%S')} tracking task is ongoing")
@@ -48,7 +48,7 @@ def publish_track(pub_state: PublisherState) -> NoReturn:
             time.sleep(0.1)
 
 
-def publish_empty(pub_state: PublisherState) -> NoReturn:
+def publish_empty(pub_state: PublishingState) -> NoReturn:
     while True:
         if pub_state.get() == State.EMPTY:
             print(f"{datetime.datetime.now().strftime('%H:%M:%S')} no tracking - empty publish")
@@ -57,7 +57,7 @@ def publish_empty(pub_state: PublisherState) -> NoReturn:
             time.sleep(0.1)
 
 
-def get_state(pub_state: PublisherState) -> NoReturn:
+def get_state(pub_state: PublishingState) -> NoReturn:
     while True:
         response = requests.get('http://localhost:8000/get_state')
         if response.status_code == 200:
@@ -69,7 +69,7 @@ def get_state(pub_state: PublisherState) -> NoReturn:
 
 
 if __name__ == "__main__":
-    pub_state = PublisherState()
+    pub_state = PublishingState()
     t1 = threading.Thread(target=publish_track, args=(pub_state,))
     t2 = threading.Thread(target=publish_empty, args=(pub_state,))
     t3 = threading.Thread(target=get_state, args=(pub_state,))
