@@ -36,10 +36,10 @@ def test_customer_sale(customer):
 
 
 # fixture factory allows fixture w/ argument rather than paramnetrize
-@pytest.fixture
-def make_customer():
+@pytest.fixture(params=["Cosmo", "Alice", "Bob"])
+def make_customer(request):
     def make(
-        first_name: str = "Cosmo",
+        first_name: str = request.param,
         last_name: str = "Kramer",
         email: str = "test@example.com",
         **rest
