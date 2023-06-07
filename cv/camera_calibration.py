@@ -47,3 +47,18 @@ x, y, w, h = roi
 dst = dst[y:y+h, x:x+w]
 cv.imwrite('data/calibresult.png', dst)
 
+img = cv.imread('data/ow2.png')
+img = cv.resize(img, (480,680))
+h,  w = img.shape[:2]
+mtx2 = np.array([(355.1282804447468, 0, 320.71130519009984),
+                   (0, 353.7572158125747, 260.3658563222029),
+                   (0, 0, 1)])
+dist2 = np.array([-0.3446166115387546,
+0.16181089795150944,
+-0.00025668894243022233,
+0.0017897240418724865,
+-0.04944665232808982])
+newcameramtx2, roi = cv.getOptimalNewCameraMatrix(mtx2, dist2, (w,h), 1, (w,h))
+dst = cv.undistort(img, mtx2, dist2)
+print(h, w)
+cv.imwrite('data/calibresult2.png', dst)
