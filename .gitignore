@@ -10,3 +10,4 @@ target/
 .hypothesis/
 test_video.mp4
 **/data
+.pdm-python
