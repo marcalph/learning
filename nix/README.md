@@ -16,6 +16,13 @@ just run a simple command from a nix env and exit
 nix develop "github:DeterminateSystems/zero-to-nix#example" --command git help
 ```
 
+### builds
 
+``` shell
+nix build "nixpkgs#python3Packages.pip"
+./result/bin/pip --help
+```
+
+> find * -type l >> .gitignore
 
 
