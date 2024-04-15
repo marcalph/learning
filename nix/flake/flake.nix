@@ -5,7 +5,7 @@
 
   outputs = { self, nixpkgs }: {
 
-    defaultPackage.aarch64-darwin =
+    packages.aarch64-darwin.default =
       # Notice the reference to nixpkgs here.
       with import nixpkgs { system = "aarch64-darwin"; };
       stdenv.mkDerivation {
